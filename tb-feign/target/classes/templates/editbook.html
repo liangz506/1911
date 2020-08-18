@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/js/bootstrap3/css/bootstrap.css}">
+    <script th:src="@{/js/jquery-1.11.3.min.js}"></script>
+    <script th:src="@{/js/bootstrap3/js/bootstrap.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/bootstrap-table/bootstrap-table.css}">
+    <script th:src="@{/js/bootstrap-table/bootstrap-table.js}"></script>
+    <script th:src="@{/js/bootstrap-table/locale/bootstrap-table-zh-CN.js}"></script>
+
+    <link rel="stylesheet" th:href="@{/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css}">
+    <script th:src="@{/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js}"></script>
+    <script th:src="@{/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js}"></script>
+
+    <script th:src="@{/js/bootstrap-bootbox/bootbox.all.min.js}"></script>
+
+</head>
+<body>
+<div class="container-fluid">
+    <form id="addBookForm" class="form-horizontal">
+        <input type="hidden" name="id" th:value="${bookBean.id}"/>
+        <div class="form-group">
+            <label class="col-sm-2" control-label>书籍名称</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" name="name" th:value="${bookBean.name}"/>
+            </div>
+
+            <label class="col-sm-2" control-label>书籍价格</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" name="price" th:value="${bookBean.price}"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2" control-label>书籍类型</label>
+            <div class="col-sm-4">
+                <select class="form-control" name="typeId">
+                    <option th:each="typeList:${typeList}"
+                            th:selected="${bookBean.typeId == typeList.id}"
+                            th:value="${typeList.id}" th:text="${typeList.name}">
+                    </option>
+                </select>
+            </div>
+
+            <label class="col-sm-2" control-label>上架时间</label>
+            <div class="col-sm-4">
+                <input type="text" class="date form-control" name="createTime" th:value="${bookBean.createTime}"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-sm-2" control-label>书籍作者</label>
+            <div class="col-sm-4">
+                <input type="text" class="form-control" name="author" th:value="${bookBean.author}"/>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+<script>
+    $(function () {
+        initDate();
+    })
+
+     function initDate() {
+         $('.date').datetimepicker({
+             language: 'zh-CN',//显示中文
+             format: 'yyyy-mm-dd',//显示格式
+             minView: "month",//设置只显示到月份
+             initialDate: new Date(),//初始化当前日期
+             autoclose: true,//选中自动关闭
+             todayBtn: true//显示今日按钮
+         });
+     }
+</script>
+</html>

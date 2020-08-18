@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/js/bootstrap3/css/bootstrap.css}">
+    <script th:src="@{/js/jquery-1.11.3.min.js}"></script>
+    <script th:src="@{/js/bootstrap3/js/bootstrap.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/bootstrap-table/bootstrap-table.css}">
+    <script th:src="@{/js/bootstrap-table/bootstrap-table.js}"></script>
+    <script th:src="@{/js/bootstrap-table/locale/bootstrap-table-zh-CN.js}"></script>
+
+    <link rel="stylesheet" th:href="@{/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css}">
+    <script th:src="@{/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js}"></script>
+    <script th:src="@{/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js}"></script>
+
+    <script th:src="@{/js/bootstrap-bootbox/bootbox.all.min.js}"></script>
+
+    <link rel="stylesheet" th:href="@{/js/bootstrap-fileinput/css/fileinput.css}"/>
+    <script th:src="@{/js/bootstrap-fileinput/js/fileinput.js}"></script>
+    <script th:src="@{/js/bootstrap-fileinput/js/locales/zh.js}"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <form id="addMallForm" class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-2 control-label">商品名称</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" name="title"/>
+                </div>
+                <label class="col-sm-2 control-label">商品价格</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" name="price">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">上架时间</label>
+                <div class="col-sm-4">
+                    <input type="text" class="date form-control" name="createTime"/>
+                </div>
+                <label class="col-sm-2 control-label">商品类型</label>
+                <div class="col-sm-4">
+                    <select id="typeAdd" class="form-control" name="typeId">
+                        <option value='-1'>请选择</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">商品简介</label>
+                <div class="col-sm-10">
+                    <textarea name="detail" style="width: 690px;height: 150px"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">商品封面</label>
+                <div class="col-sm-10">
+                    <input type="hidden" id="testimg" name="img"/>
+                    <input type="file" multiple class="projectfile" accept="image/*" name="img" id="inputImg"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+<script>
+    $(function () {
+        initAddMallType();
+    })
+    
+    function initAddMallType() {
+        $.post("../mall/findMallTypeList",{},function(data){
+            var str = '<option value="-1">请选择</option>';
+            for (var i = 0; i < data.length; i++) {
+                str += "<option value='"+data[i].id+"'>"+data[i].name+"</option>";
+            }
+            $("#typeAdd").html(str);
+        })
+    }
+
+    $('.date').datetimepicker({
+        language: 'zh-CN',//显示中文
+        format: 'yyyy-mm-dd',//显示格式
+        minView: "month",//设置只显示到月份
+        initialDate: new Date(),//初始化当前日期
+        autoclose: true,//选中自动关闭
+        todayBtn: true//显示今日按钮
+    });
+
+    $('#inputImg').fileinput({
+        language: 'zh', //设置语言
+        uploadUrl: '../mall/upload', //上传的地址
+        allowedFileExtensions: ['jpg', 'gif', 'png'],//接收的文件后缀
+        showUpload: true, //是否显示上传按钮
+        showCaption: false,//是否显示标题
+        browseClass: "btn btn-primary", //按钮样式
+        //dropZoneEnabled: false,//是否显示拖拽区域
+        //minImageWidth: 50, //图片的最小宽度
+        //minImageHeight: 50,//图片的最小高度
+        //maxImageWidth: 1000,//图片的最大宽度
+        //maxImageHeight: 1000,//图片的最大高度
+        //maxFileSize: 0,//单位为kb，如果为0表示不限制文件大小
+        //minFileCount: 0,
+        maxFileCount: 2, //表示允许同时上传的最大文件个数
+        enctype: 'multipart/form-data',
+        validateInitialCount:true,
+        previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
+        msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",
+
+    }).on('fileuploaded', function(event, data, previewId, index) {
+        var imgval = "http://<%= request.getServerName()%>:<%=request.getServerPort()%><%=request.getContextPath()%>/"+data.response.img;
+        $('#testimg').val(imgval);
+    });
+</script>
+</html>

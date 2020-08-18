@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/js/bootstrap3/css/bootstrap.css}">
+    <script th:src="@{/js/jquery-1.11.3.min.js}"></script>
+    <script th:src="@{/js/bootstrap3/js/bootstrap.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/bootstrap-table/bootstrap-table.css}">
+    <script th:src="@{/js/bootstrap-table/bootstrap-table.js}"></script>
+    <script th:src="@{/js/bootstrap-table/locale/bootstrap-table-zh-CN.js}"></script>
+
+    <link rel="stylesheet" th:href="@{/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css}">
+    <script th:src="@{/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js}"></script>
+    <script th:src="@{/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js}"></script>
+
+    <script th:src="@{/js/bootstrap-bootbox/bootbox.all.min.js}"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <form id="addBookForm" class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-2" control-label>书籍名称</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" name="name"/>
+                </div>
+
+                <label class="col-sm-2" control-label>书籍价格</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" name="price"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2" control-label>书籍类型</label>
+                <div class="col-sm-4">
+                    <select id="typeAdd" class="form-control" name="typeId">
+                        <option value='-1'>请选择</option>
+                    </select>
+                </div>
+
+                <label class="col-sm-2" control-label>上架时间</label>
+                <div class="col-sm-4">
+                    <input type="text" class="date form-control" name="createTime"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2" control-label>书籍作者</label>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" name="author"/>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+<script type="text/javascript">
+    $(function(){
+        initAddType();
+    })
+
+    function initAddType(){
+        $.post("../book/findTypeList",{},function(data){
+            var str = '<option value="-1">请选择</option>';
+            for (var i = 0; i < data.length; i++) {
+                str += "<option value='"+data[i].id+"'>"+data[i].name+"</option>";
+            }
+            $("#typeAdd").html(str);
+        })
+    }
+
+    $('.date').datetimepicker({
+        language: 'zh-CN',//显示中文
+        format: 'yyyy-mm-dd',//显示格式
+        minView: "month",//设置只显示到月份
+        initialDate: new Date(),//初始化当前日期
+        autoclose: true,//选中自动关闭
+        todayBtn: true//显示今日按钮
+    });
+</script>
+</html>

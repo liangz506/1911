@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/js/bootstrap3/css/bootstrap.css}">
+    <script th:src="@{/js/jquery-1.11.3.min.js}"></script>
+    <script th:src="@{/js/bootstrap3/js/bootstrap.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/bootstrap-table/bootstrap-table.css}">
+    <script th:src="@{/js/bootstrap-table/bootstrap-table.js}"></script>
+    <script th:src="@{/js/bootstrap-table/locale/bootstrap-table-zh-CN.js}"></script>
+
+    <link rel="stylesheet" th:href="@{/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css}">
+    <script th:src="@{/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js}"></script>
+    <script th:src="@{/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js}"></script>
+
+    <script th:src="@{/js/bootstrap-bootbox/bootbox.all.min.js}"></script>
+</head>
+<body>
+    <div id="toolbar">
+        <button onclick="openMallAddDialog()" class="btn btn-info glyphicon glyphicon-plus" type="button">新增</button>
+    </div>
+    <div id="mallTable"></div>
+</body>
+<script>
+    $(function () {
+        initMallTable()
+    })
+
+    //打开新增弹框
+    function openMallAddDialog() {
+        bootbox.dialog({
+            title:'新增书籍',
+            message:createAddContent("../mall/toAddMallPage"),
+            closeButton:true,
+            size:'large',
+            buttons:{
+                ok:{
+                    label:"保存",
+                    className:'btn-info',
+                    callback:function(){
+                        saveMall();
+                    }
+                },
+                cancel:{
+                    label:'取消',
+                    className:'btn-danger',
+                    callback:function(){
+                        console.log('Custom cancel clicked');
+                    }
+                }
+            }
+        })
+    }
+
+    //新增图书
+    function saveMall(){
+        $.ajax({
+            url:'../mall/saveMall',
+            type:'post',
+            data:$("#addMallForm").serialize(),
+            dataType:'json',
+            success:function(data){
+                $('#mallTable').bootstrapTable("refresh");
+            }
+        })
+    }
+
+    //查询商品列表
+    function initMallTable() {
+        $('#mallTable').bootstrapTable({
+            url:'../mall/findMallList',//获取数据地址
+            method:'post',
+            contentType:'application/x-www-form-urlencoded',//post请求按照表单方式
+            columns:[
+                [
+                    {field:'id',title:'编号'},
+                    {field:'title',title:'商品名称'},
+                    {field:'price',title:'商品价格'},
+                    {field:'mallName',title:'商品类型'},
+                    {field:'createTime',title:'上架时间'},
+                    {field:'img',title:'商品图',
+                        formatter:function(value,row,index){
+                            return "<img src="+value+" width='50' height='50'>";
+                        }
+                    },
+                    {field:'detail',title:'商品简介'},
+                    {field:'cz',title:'操作',
+                        formatter:function(value,row,index){
+                            return '<a href="javascript:editMall('+row.id+');">修改</a> | <a href="javascript:deleteMall('+row.id+');">删除</a>'
+                        }
+                    },
+                ]
+            ]
+        });
+    }
+
+    var res;
+    function createAddContent(url){
+        $.ajax({
+            url:url,
+            async:false,
+            success:function(data){
+                res = data;
+            }
+        });
+        return res;
+    }
+</script>
+</html>

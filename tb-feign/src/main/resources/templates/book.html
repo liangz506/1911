@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/js/bootstrap3/css/bootstrap.css}">
+    <script th:src="@{/js/jquery-1.11.3.min.js}"></script>
+    <script th:src="@{/js/bootstrap3/js/bootstrap.js}"></script>
+    <link rel="stylesheet" th:href="@{/js/bootstrap-table/bootstrap-table.css}">
+    <script th:src="@{/js/bootstrap-table/bootstrap-table.js}"></script>
+    <script th:src="@{/js/bootstrap-table/locale/bootstrap-table-zh-CN.js}"></script>
+
+    <link rel="stylesheet" th:href="@{/js/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css}">
+    <script th:src="@{/js/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js}"></script>
+    <script th:src="@{/js/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js}"></script>
+
+    <script th:src="@{/js/bootstrap-bootbox/bootbox.all.min.js}"></script>
+</head>
+<body>
+<div id="toolbar">
+    <button onclick="openBookAddDialog()" class="btn btn-info glyphicon glyphicon-plus" type="button" >新增</button>
+</div>
+<div id="bookTable"></div>
+</body>
+<script>
+    $(function(){
+        initBookTable();
+    })
+
+    //打开新增弹框
+    function openBookAddDialog(){
+        bootbox.dialog({
+            title:'新增书籍',
+            message:createAddContent("../book/toAddBookPage"),
+            closeButton:true,
+            size:'large',
+            buttons:{
+                ok:{
+                    label:"保存",
+                    className:'btn-info',
+                    callback:function(){
+                        saveBook();
+                    }
+                },
+                cancel:{
+                    label:'取消',
+                    className:'btn-danger',
+                    callback:function(){
+                        console.log('Custom cancel clicked');
+                    }
+                }
+            }
+        })
+    }
+    //新增图书
+    function saveBook(){
+        $.ajax({
+            url:'../book/saveBook',
+            type:'post',
+            data:$("#addBookForm").serialize(),
+            dataType:'json',
+            success:function(data){
+                $('#bookTable').bootstrapTable("refresh");
+            }
+        })
+    }
+
+    //查询
+    function initBookTable(){
+        $('#bookTable').bootstrapTable({
+            url:'../book/findBookList',//获取数据地址
+            method:'post',
+            contentType:'application/x-www-form-urlencoded',//post请求按照表单方式
+            columns:[
+                [
+                    {field:'id',title:'编号'},
+                    {field:'name',title:'书籍名称'},
+                    {field:'price',title:'书籍价格'},
+                    {field:'typeName',title:'书籍类型'},
+                    {field:'createTime',title:'上市时间'},
+                    {field:'author',title:'书籍作者'},
+                    {field:'cz',title:'操作',
+                        formatter:function(value,row,index){
+                            return '<a href="javascript:editBook('+row.id+');">修改</a> | <a href="javascript:deleteBook('+row.id+');">删除</a>'
+                        }
+                },
+              ]
+            ]
+        });
+    }
+
+    //修改
+    function editBook(id){
+        bootbox.dialog({
+            title:'编辑书籍',
+            message:createAddContent("../book/toEditBookPage?id="+id),
+            closeButton:true,
+            size:'large',
+            buttons:{
+                ok:{
+                    label:"保存",
+                    className:'btn-info',
+                    callback:function(){
+                        saveBook();
+                    }
+                },
+                cancel:{
+                    label:'取消',
+                    className:'btn-danger',
+                    callback:function(){
+                        console.log('Custom cancel clicked');
+                    }
+                }
+            }
+        })
+    }
+
+    //删除
+    function deleteBook(id) {
+        bootbox.confirm("确定要删除吗?",function(r){
+            if (r) {
+                $.post('../book/deleteBook',{id:id},function(data){
+                    $('#bookTable').bootstrapTable("refresh");
+                })
+            }
+        })
+    }
+
+    var res;
+    function createAddContent(url){
+        $.ajax({
+            url:url,
+            async:false,
+            success:function(data){
+                res = data;
+            }
+        });
+        return res;
+    }
+</script>
+</html>
